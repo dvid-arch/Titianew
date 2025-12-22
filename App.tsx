@@ -137,7 +137,7 @@ const App: React.FC = () => {
 
       <main className="max-w-[1600px] mx-auto pt-48 px-8 md:px-20">
         
-        {/* HERO SECTION */}
+        {/* HERO SECTION - REFINED TYPOGRAPHY TO PREVENT CLIPPING */}
         <section className="flex flex-col items-center mb-64" id="home">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -148,15 +148,19 @@ const App: React.FC = () => {
           </motion.div>
 
           <div className="relative w-full text-center">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-40 bg-indigo-500/20 blur-[180px] pointer-events-none rounded-full" />
-            <motion.span className="text-2xl md:text-[46px] font-medium tracking-[0.45em] text-white/30 uppercase mb-8 block">AI That Thinks Ahead</motion.span>
-            <motion.h1 
-              className="text-[80px] md:text-[200px] font-black leading-[0.8] tracking-[-0.07em] text-gradient uppercase mb-12"
-            >
-              EMPOWERING <br/>MASTERY
-            </motion.h1>
-            <p className="text-xl md:text-3xl text-white/40 max-w-4xl mx-auto font-medium tracking-tight mb-16 leading-tight">
-              Unlock real-time intelligence, automation, and predictive analytics with our browser-native virtual instances. No sync required.
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-60 bg-indigo-500/10 blur-[200px] pointer-events-none rounded-full" />
+            <motion.span className="text-xl md:text-[36px] font-medium tracking-[0.45em] text-white/30 uppercase mb-6 block">AI That Thinks Ahead</motion.span>
+            
+            <div className="relative overflow-visible">
+              <motion.h1 
+                className="text-[60px] sm:text-[100px] md:text-[140px] lg:text-[180px] font-black leading-[0.85] tracking-[-0.05em] text-gradient uppercase mb-12 whitespace-nowrap lg:whitespace-normal"
+              >
+                EMPOWERING <br className="hidden lg:block" /> MASTERY
+              </motion.h1>
+            </div>
+
+            <p className="text-lg md:text-2xl text-white/40 max-w-4xl mx-auto font-medium tracking-tight mb-16 leading-tight">
+              Unlock real-time intelligence, automation, and predictive analytics with our browser-native virtual instances. No installation required.
             </p>
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
                <button 
@@ -192,7 +196,8 @@ const App: React.FC = () => {
                  <p className="text-white/40 max-w-xs mx-auto leading-relaxed mb-12">{item.desc}</p>
                  <div className="w-full aspect-video bg-white/[0.02] border border-white/5 rounded-[40px] flex items-center justify-center overflow-hidden relative group-hover:border-indigo-500/20 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {React.cloneElement(item.icon as React.ReactElement, { size: 48, className: "text-white/10 group-hover:text-indigo-500/40 transition-all" })}
+                    {/* Technical Fix: Added explicit generic type to React.cloneElement to prevent 'unknown' props inference error */}
+                    {React.cloneElement(item.icon as React.ReactElement<any>, { size: 48, className: "text-white/10 group-hover:text-indigo-500/40 transition-all" })}
                  </div>
                </div>
              ))}
