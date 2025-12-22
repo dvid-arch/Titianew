@@ -153,7 +153,7 @@ const App: React.FC = () => {
             
             <div className="relative overflow-visible">
               <motion.h1 
-                className="text-[60px] sm:text-[100px] md:text-[140px] lg:text-[180px] font-black leading-[0.85] tracking-[-0.05em] text-gradient uppercase mb-12 whitespace-nowrap lg:whitespace-normal"
+                className="text-[50px] sm:text-[80px] md:text-[140px] lg:text-[140px] font-black leading-[0.85] tracking-[-0.05em] text-gradient uppercase mb-12 whitespace-nowrap lg:whitespace-normal"
               >
                 EMPOWERING <br className="hidden lg:block" /> MASTERY
               </motion.h1>
