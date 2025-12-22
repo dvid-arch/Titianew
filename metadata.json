@@ -1,0 +1,7 @@
+{
+  "name": "Titia - Integrated Mastery Engine",
+  "description": "An interactive learning platform that goes beyond tutorials by integrating directly with tools like Figma and Blender, guiding users through hands-on mastery with AI-driven visual, audio, and text feedback.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
