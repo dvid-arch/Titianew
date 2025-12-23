@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Box, Move, RotateCw, Scaling, MousePointer2, Camera, Sun, Layers, Grid, ChevronDown, Cube as CubeIcon, Play, Settings, Database } from 'lucide-react';
+// Fix: Removed non-existent Cube export from lucide-react
+import { Box, Move, RotateCw, Scaling, MousePointer2, Camera, Sun, Layers, Grid, ChevronDown, Play, Settings, Database } from 'lucide-react';
 
 interface BlenderMockProps {
   highlightId: string | null;
