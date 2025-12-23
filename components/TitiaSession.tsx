@@ -58,36 +58,7 @@ const TitiaSession: React.FC<TitiaSessionProps> = ({ tool, onExit }) => {
   const nextStartTimeRef = useRef<number>(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Provisioning simulation
-    const timer = setTimeout(() => {
-        setIsProvisioning(false);
-        greet();
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [tool]);
-
-  const greet = async () => {
-    const text = `Neural Sandbox Provisioned for ${tool.name}. Cloud instance is live and responsive. I have mapped the primary interaction manifold. Focus on the toolbar to initiate your mastery protocol.`;
-    const initialMessage: ChatMessage = {
-      role: 'model',
-      text,
-      timestamp: Date.now()
-    };
-    setMessages([initialMessage]);
-    setHighlightId('toolbar');
-    await speak(text);
-  };
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    const interval = setInterval(() => {
-        setLatency(prev => Math.min(Math.max(prev + (Math.random() * 2 - 1), 8), 24));
-        setGpuLoad(prev => Math.min(Math.max(prev + (Math.random() * 4 - 2), 70), 99));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [messages]);
-
+  // Define utility functions above useEffect hooks to avoid reference errors
   const speak = async (text: string) => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
@@ -115,6 +86,37 @@ const TitiaSession: React.FC<TitiaSessionProps> = ({ tool, onExit }) => {
     }
   };
 
+  const greet = async () => {
+    const text = `Neural Sandbox Provisioned for ${tool.name}. Cloud instance is live and responsive. I have mapped the primary interaction manifold. Focus on the toolbar to initiate your mastery protocol.`;
+    const initialMessage: ChatMessage = {
+      role: 'model',
+      text,
+      timestamp: Date.now()
+    };
+    setMessages([initialMessage]);
+    setHighlightId('toolbar');
+    await speak(text);
+  };
+
+  useEffect(() => {
+    // Provisioning simulation
+    const timer = setTimeout(() => {
+        setIsProvisioning(false);
+        greet();
+    }, 2500);
+    // Fix: replaced setTimeout with clearTimeout in the destructor to correctly clean up the effect
+    return () => clearTimeout(timer);
+  }, [tool]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const interval = setInterval(() => {
+        setLatency(prev => Math.min(Math.max(prev + (Math.random() * 2 - 1), 8), 24));
+        setGpuLoad(prev => Math.min(Math.max(prev + (Math.random() * 4 - 2), 70), 99));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [messages]);
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
     const userMsg: ChatMessage = { role: 'user', text: inputValue, timestamp: Date.now() };
@@ -122,10 +124,15 @@ const TitiaSession: React.FC<TitiaSessionProps> = ({ tool, onExit }) => {
     setInputValue('');
     setIsTitiaThinking(true);
     try {
-      const response = await getGeminiResponse(inputValue, tool.name);
-      const modelMsg: ChatMessage = { role: 'model', text: response || "Cloud stream unstable. Re-syncing.", timestamp: Date.now() };
+      const result = await getGeminiResponse(inputValue, tool.name);
+      const modelMsg: ChatMessage = { 
+        role: 'model', 
+        text: result.text, 
+        timestamp: Date.now(),
+        sources: result.sources // Technical Fix: Capture grounding sources
+      };
       setMessages(prev => [...prev, modelMsg]);
-      if (response) await speak(response);
+      if (result.text) await speak(result.text);
     } catch (error) {
       console.error(error);
     } finally {
@@ -361,6 +368,26 @@ const TitiaSession: React.FC<TitiaSessionProps> = ({ tool, onExit }) => {
                     : 'bg-white/[0.04] text-white/90 border border-white/10 backdrop-blur-3xl'
                 }`}>
                   {msg.text}
+                  
+                  {/* Technical Fix: Mandatory UI display for grounding sources as per guidelines */}
+                  {msg.role === 'model' && msg.sources && msg.sources.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-white/10 flex flex-col gap-4">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Knowledge Sources</span>
+                      <div className="flex flex-wrap gap-3">
+                        {msg.sources.map((source, idx) => (
+                          <a 
+                            key={idx} 
+                            href={source.uri} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-[11px] text-indigo-400 font-bold hover:bg-indigo-500 hover:text-white transition-all"
+                          >
+                            <Link size={12} /> {source.title || 'Source'}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}

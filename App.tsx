@@ -91,8 +91,13 @@ const App: React.FC = () => {
   const [selectedTool, setSelectedTool] = useState<ToolConfig | null>(null);
   const [isLaunched, setIsLaunched] = useState(false);
 
-  const handleLaunch = () => {
+  const handleLaunch = (tool: ToolConfig) => {
+    setSelectedTool(tool);
     setIsLaunched(true);
+  };
+
+  const scrollToExpertise = () => {
+    document.getElementById('expertise')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   if (isLaunched && selectedTool) {
@@ -116,7 +121,7 @@ const App: React.FC = () => {
       {/* Navigation Header */}
       <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-3xl border-b border-white/5 bg-black/40">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center py-6 px-8 md:px-20">
-          <div className="flex items-center gap-4 group cursor-pointer">
+          <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <div className="w-10 h-10 bg-white text-black rounded-[14px] flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-all">
               <Command size={22} strokeWidth={3} />
             </div>
@@ -124,12 +129,17 @@ const App: React.FC = () => {
           </div>
           
           <nav className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.3em] text-white/40">
-            {['Cloud Lab', 'Protocol', 'Expertise', 'Pricing', 'Testimonials'].map(item => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors">{item}</a>
-            ))}
+            <a href="#home" className="hover:text-white transition-colors">Cloud Lab</a>
+            <a href="#protocol" className="hover:text-white transition-colors">Protocol</a>
+            <a href="#expertise" className="hover:text-white transition-colors">Expertise</a>
+            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
           </nav>
           
-          <button className="px-8 py-3.5 rounded-full bg-indigo-600 text-white text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl shadow-indigo-600/20">
+          <button 
+            onClick={scrollToExpertise}
+            className="px-8 py-3.5 rounded-full bg-indigo-600 text-white text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl shadow-indigo-600/20"
+          >
             Get Started
           </button>
         </div>
@@ -137,7 +147,7 @@ const App: React.FC = () => {
 
       <main className="max-w-[1600px] mx-auto pt-48 px-8 md:px-20">
         
-        {/* HERO SECTION - REFINED TYPOGRAPHY TO PREVENT CLIPPING */}
+        {/* HERO SECTION */}
         <section className="flex flex-col items-center mb-64" id="home">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -153,7 +163,7 @@ const App: React.FC = () => {
             
             <div className="relative overflow-visible">
               <motion.h1 
-                className="text-[50px] sm:text-[80px] md:text-[140px] lg:text-[140px] font-black leading-[0.85] tracking-[-0.05em] text-gradient uppercase mb-12 whitespace-nowrap lg:whitespace-normal"
+                className="text-[60px] sm:text-[100px] md:text-[140px] lg:text-[180px] font-black leading-[0.85] tracking-[-0.05em] text-gradient uppercase mb-12 whitespace-nowrap lg:whitespace-normal"
               >
                 EMPOWERING <br className="hidden lg:block" /> MASTERY
               </motion.h1>
@@ -164,12 +174,17 @@ const App: React.FC = () => {
             </p>
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
                <button 
-                 onClick={() => setSelectedTool(TOOLS[0])}
+                 onClick={() => handleLaunch(TOOLS[0])}
                  className="px-12 py-6 rounded-full bg-indigo-600 font-black text-sm uppercase tracking-[0.4em] shadow-2xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-4"
+               >
+                 Launch Sandbox <CloudLightning size={18} />
+               </button>
+               <button 
+                 onClick={() => handleLaunch(TOOLS[0])}
+                 className="px-12 py-6 rounded-full bg-white/5 border border-white/10 font-black text-sm uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all flex items-center gap-4"
                >
                  Join Waitlist <Plus size={18} />
                </button>
-               <span className="text-[11px] font-black text-white/20 uppercase tracking-[0.5em]">Global Nodes Active</span>
             </div>
           </div>
         </section>
@@ -196,7 +211,6 @@ const App: React.FC = () => {
                  <p className="text-white/40 max-w-xs mx-auto leading-relaxed mb-12">{item.desc}</p>
                  <div className="w-full aspect-video bg-white/[0.02] border border-white/5 rounded-[40px] flex items-center justify-center overflow-hidden relative group-hover:border-indigo-500/20 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {/* Technical Fix: Added explicit generic type to React.cloneElement to prevent 'unknown' props inference error */}
                     {React.cloneElement(item.icon as React.ReactElement<any>, { size: 48, className: "text-white/10 group-hover:text-indigo-500/40 transition-all" })}
                  </div>
                </div>
@@ -214,10 +228,8 @@ const App: React.FC = () => {
             {TOOLS.map((tool, index) => (
               <motion.button
                 key={tool.id}
-                onClick={() => setSelectedTool(tool)}
-                className={`group relative p-12 rounded-[52px] text-left transition-all duration-700 isometric-block flex flex-col gap-12 h-full overflow-hidden ${
-                  selectedTool?.id === tool.id ? 'border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500 shadow-[0_40px_80px_rgba(0,0,0,0.5)]' : 'hover:bg-white/[0.04]'
-                }`}
+                onClick={() => handleLaunch(tool)}
+                className={`group relative p-12 rounded-[52px] text-left transition-all duration-700 isometric-block flex flex-col gap-12 h-full overflow-hidden hover:bg-white/[0.04] hover:border-indigo-500/40`}
               >
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${tool.primaryColor} flex items-center justify-center shadow-3xl group-hover:scale-110 transition-transform`}>
                   {tool.id === ToolType.FIGMA && <Figma size={32} />}
@@ -229,8 +241,13 @@ const App: React.FC = () => {
                   <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter">{tool.name}</h3>
                   <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em]">{tool.description}</p>
                 </div>
-                <div className="mt-auto flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.5em] text-white/40">
-                  {selectedTool?.id === tool.id ? 'INSTANCE READY' : 'PROVISION LAB'} <ChevronRight size={16} />
+                <div className="mt-auto flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.5em] text-white/40 group-hover:text-indigo-400 transition-colors">
+                  BOOT INSTANCE <ChevronRight size={16} />
+                </div>
+                
+                {/* Visual indicator of "Instant Action" */}
+                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                   <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_10px_rgba(99,102,241,1)]"></div>
                 </div>
               </motion.button>
             ))}
